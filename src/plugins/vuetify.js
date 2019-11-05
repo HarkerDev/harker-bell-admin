@@ -12,15 +12,26 @@ export default new Vuetify({
       light: {
         primary: "#005841",
         secondary: "#424242",
-        accent: "#82B1FF",
-        error: "#FF5252",
-        info: "#2196F3",
-        success: "#4CAF50",
-        warning: "#FFC107"
+        accent: "#098060",
+        error: "#D93025",
+        warning: "#F9AB00",
+        success: "#188038",
+        info: "#4285F4",
+        anchor: "#1A73E8"
       },
+      dark: {
+        primary: "#005841",
+        secondary: "#424242",
+        accent: "#098060",
+        error: "#EA4335",
+        warning: "#FBBC04",
+        success: "#34A853",
+        info: "#4285F4",
+        anchor: "#8AB4F8"
+      }
     },
   },
   icons: {
-    iconfont: "md",
+    iconfont: "md"
   },
 });

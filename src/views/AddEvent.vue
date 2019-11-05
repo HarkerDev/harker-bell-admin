@@ -20,7 +20,7 @@ export default {
   },
   methods: {
     submit() {
-      return fetch("https://bell.dev.harker.org/admin/addEvents", {
+      /*return fetch("https://bell.dev.harker.org/admin/addEvents", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -35,7 +35,7 @@ export default {
         
       }).catch(error => {
         
-      });
+      });*/
     }
   },
 };
