@@ -3,12 +3,13 @@
     <v-row>
       <v-col>
         <v-select :items="presets" dense item-text="preset" item-value="preset" return-object v-model="selectedPreset" label="Choose a preset..." :loading="presets.length == 0"></v-select>
+        <monaco-editor v-model="editedSchedule" ref="editor" :options="options" language="json" :theme="dark ? 'vs-dark' : 'vs'" style="height: 400px;" @editorDidMount="editorDidMount"></monaco-editor>
       </v-col>
       <v-col>
         <v-sheet class="day-container border-thick" max-width="180" min-height="498">
           <!-- DAY HEADER -->
           <v-sheet class="day-header" height="44" tile>
-            <v-row class="ml-5" align="center" no-gutters>
+            <v-row class="ml-2" align="center" no-gutters>
               <v-col cols="auto">
                 <v-layout column align-center>
                   <span class="overline">Mon</span>
@@ -17,11 +18,11 @@
               </v-col>
               <v-spacer></v-spacer>
               <v-col v-if="selectedPreset.schedule" cols="auto">
-                <v-row class="mr-5" align="center" no-gutters>
+                <v-row class="mr-2" align="center" no-gutters>
                   <v-chip v-if="selectedPreset.variant" class="font-weight-bold" :color="selectedPreset.variant.includes('adj') ? 'warning' : 'special'" :input-value="true" outlined x-small>
                     {{selectedPreset.variant}}
                   </v-chip>
-                  <span class="display-1 ml-2 mb-n1 text--disabled font-weight-bold">{{selectedPreset.code}}</span>
+                  <span class="display-1 ml-2 text--disabled font-weight-bold">{{selectedPreset.code}}</span>
                 </v-row>
               </v-col>
             </v-row>
@@ -62,7 +63,11 @@
 </template>
 
 <script>
+import MonacoEditor from "vue-monaco";
 export default {
+  components: {
+    MonacoEditor
+  },
   props: {
     accessToken: {
       type: String,
@@ -71,6 +76,10 @@ export default {
     baseUrl: {
       type: String,
       required: true
+    },
+    dark: {
+      type: Boolean,
+      default: false
     },
   },
   filters: {
@@ -84,6 +93,17 @@ export default {
     return {
       presets: [],
       selectedPreset: {},
+      editedSchedule: "",
+      options: {
+        autoIndent: true,
+        cursorSmoothCaretAnimation: true,
+        minimap: {enabled: false},
+        roundedSelection: false,
+        scrollBeyondLastLine: false,
+        smoothScrolling: true,
+        wordWrap: true,
+        wrappingIndent: "same",
+      },
     };
   },
   computed: {
@@ -134,11 +154,23 @@ export default {
     accessToken() {
       this.fetchAllPresets();
     },
+    selectedPreset(preset) {
+      if (preset)
+        this.editedSchedule = JSON.stringify(preset.schedule, null, 2);
+      else this.editedSchedule = "";
+    },
   },
   created() {
     this.$MS_PER_MIN = 60*1000;
   },
   methods: {
+    editorDidMount(editor) {
+      editor.getModel().updateOptions({
+        indentSize: 2,
+        insertSpaces: true,
+        tabSize: 2,
+      });
+    },
     async fetchAllPresets() {
       const response = await fetch(this.baseUrl+"/admin/getAllPresets", {
         method: "POST",

@@ -8,6 +8,9 @@
           <v-col cols="auto">
             <v-text-field v-model="accessToken" id="password" hide-details dense placeholder="Access Token" type="password"></v-text-field>
           </v-col>
+          <v-btn icon @click="refresh">
+            <v-icon>refresh</v-icon>
+          </v-btn>
           <v-col cols="auto">
             <v-switch v-model="productionMode" color="white" hide-details :label="productionMode ? 'Production' : 'Development'"></v-switch>
           </v-col>
@@ -18,7 +21,7 @@
       </v-toolbar-items>
     </v-app-bar>
     <v-content>
-      <router-view :access-token="accessToken" :base-url="baseUrl"></router-view>
+      <router-view :access-token="accessToken" :base-url="baseUrl" :dark="$vuetify.theme.dark"></router-view>
     </v-content>
   </v-app>
 </template>
@@ -48,7 +51,14 @@ export default {
     baseUrl() {
       return this.productionMode ? "https://bell.dev.harker.org" : "http://localhost:5000";
     }
-  }
+  },
+  methods: {
+    refresh() {
+      let accessToken = this.accessToken;
+      this.accessToken = "";
+      this.$nextTick(() => this.accessToken = accessToken);
+    },
+  },
 };
 </script>
 
