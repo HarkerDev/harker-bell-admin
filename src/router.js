@@ -24,8 +24,8 @@ const routes = [
     component: () => import(/* webpackChunkName: "addevent" */ "./views/AddEvent.vue")
   },
   {
-    path: "/editschedule",
-    name: "editschedule",
+    path: "/edit",
+    name: "edit",
     component: () => import(/* webpackChunkName: "editschedule" */ "./views/EditSchedule.vue")
   },
 ];

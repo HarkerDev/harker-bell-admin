@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
-      <v-toolbar-title class="headline">Harker Bell <span class="title font-weight-bold">Admin Console</span></v-toolbar-title>
+      <v-toolbar-title class="title d-none d-md-flex"><span class="font-weight-bold mr-2">Harker Bell</span> <span class="font-weight-regular">Admin Console</span></v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-row align="center">
@@ -11,7 +11,7 @@
           <v-btn icon @click="refresh">
             <v-icon>refresh</v-icon>
           </v-btn>
-          <v-col cols="auto">
+          <v-col class="d-none d-sm-flex" cols="auto">
             <v-switch v-model="productionMode" color="white" hide-details :label="productionMode ? 'Production' : 'Development'"></v-switch>
           </v-col>
           <v-btn icon @click="$vuetify.theme.dark = !$vuetify.theme.dark">

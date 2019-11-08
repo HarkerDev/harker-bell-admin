@@ -1,12 +1,12 @@
 <template>
   <v-container>
     <v-row>
-      <v-col>
-        <v-select :items="presets" dense item-text="preset" item-value="preset" return-object v-model="selectedPreset" label="Choose a preset..." :loading="presets.length == 0"></v-select>
+      <v-col cols="12" sm="8" md="6" lg="6" xl="4">
+        <v-autocomplete :items="presets" dense item-text="preset" item-value="preset" return-object v-model="selectedPreset" label="Choose a preset..." :loading="presets.length == 0"></v-autocomplete>
         <monaco-editor v-model="editedSchedule" ref="editor" :options="options" language="json" :theme="dark ? 'vs-dark' : 'vs'" style="height: 400px;" @editorDidMount="editorDidMount"></monaco-editor>
       </v-col>
-      <v-col>
-        <v-sheet class="day-container border-thick" max-width="180" min-height="498">
+      <v-col cols="auto">
+        <v-sheet class="day-container border-thick" max-width="180" min-width="180" min-height="498">
           <!-- DAY HEADER -->
           <v-sheet class="day-header" height="44" tile>
             <v-row class="ml-2" align="center" no-gutters>
@@ -58,6 +58,19 @@
           </v-layout>
         </v-sheet>
       </v-col>
+      <v-col cols="12" sm="8" md="3" lg="3" xl="2">
+        <v-menu v-model="scheduleForm.menu" :close-on-content-click="false" offset-y min-width="290px">
+          <template v-slot:activator="{on}">
+            <v-text-field v-model="scheduleForm.date" clearable dense label="Date of schedule" prepend-icon="event" readonly v-on="on"></v-text-field>
+          </template>
+          <v-date-picker v-model="scheduleForm.date" no-title @input="scheduleForm.menu = false"></v-date-picker>
+        </v-menu>
+        <v-btn tile color="primary" :disabled="!scheduleForm.date || scheduleForm.date.length == 0" :loading="scheduleForm.loading">Save as schedule</v-btn>
+        <v-divider class="mt-4"></v-divider>
+        <v-text-field v-model="presetForm.name" clearable label="New preset name" prepend-icon="short_text"></v-text-field>
+        <v-btn tile color="primary" :disabled="!presetForm.name || presetForm.name.length == 0" :loading="presetForm.loading">Save as preset</v-btn>
+        <v-divider class="mt-4"></v-divider>
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -103,6 +116,15 @@ export default {
         smoothScrolling: true,
         wordWrap: true,
         wrappingIndent: "same",
+      },
+      presetForm: {
+        name: "",
+        loading: false
+      },
+      scheduleForm: {
+        date: "",
+        menu: false,
+        loading: false
       },
     };
   },
@@ -155,8 +177,7 @@ export default {
       this.fetchAllPresets();
     },
     selectedPreset(preset) {
-      if (preset)
-        this.editedSchedule = JSON.stringify(preset.schedule, null, 2);
+      if (preset) this.editedSchedule = JSON.stringify(preset.schedule, null, 2);
       else this.editedSchedule = "";
     },
   },
@@ -174,14 +195,26 @@ export default {
     async fetchAllPresets() {
       const response = await fetch(this.baseUrl+"/admin/getAllPresets", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify({access_token: this.accessToken}),
       });
       if (!response.ok) return;
       this.presets = await response.json();
-    }
+    },
+    async saveAsPreset() {
+      this.presetForm.loading = true;
+      const response = await fetch(this.baseUrl+"/admin/addPreset", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(),
+      });
+      if (!response.ok) return;
+      
+    },
+    async saveAsSchedule() {
+      this.scheduleForm.loading = true;
+      //const response = await fetch(this.baseUrl+"/admin/")
+    },
   }
 };
 </script>
