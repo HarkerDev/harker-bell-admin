@@ -14,9 +14,9 @@ export default new Vuetify({
         secondary: "#424242",
         accent: "#098060",
         error: "#D93025",
-        warning: "#F9AB00",
+        warning: "#EA8600",
         success: "#188038",
-        info: "#4285F4",
+        info: "#1A73E8",
         anchor: "#1A73E8"
       },
       dark: {
@@ -26,7 +26,7 @@ export default new Vuetify({
         error: "#EA4335",
         warning: "#FBBC04",
         success: "#34A853",
-        info: "#4285F4",
+        info: "#8AB4F8",
         anchor: "#8AB4F8"
       }
     },

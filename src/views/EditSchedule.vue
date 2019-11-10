@@ -1,9 +1,11 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" sm="8" md="6" lg="6" xl="4">
+      <v-col cols="12" sm="8" md="5" lg="6" xl="4">
         <v-autocomplete :items="presets" dense item-text="preset" item-value="preset" return-object v-model="selectedPreset" label="Choose a preset..." :loading="presets.length == 0"></v-autocomplete>
-        <monaco-editor v-model="editedSchedule" ref="editor" :options="options" language="json" :theme="dark ? 'vs-dark' : 'vs'" style="height: 400px;" @editorDidMount="editorDidMount"></monaco-editor>
+        <monaco-editor v-model="editedSchedule" ref="editor" :options="options" language="json" :theme="dark ? 'vs-dark' : 'vs'" style="height: 440px;" @editorDidMount="editorDidMount"></monaco-editor>
+        <v-btn class="mt-1" color="primary" small text tile @click="insertNBSpace">Insert non-breaking space</v-btn>
+        <v-btn class="mt-1" color="primary" small text tile @click="insertNBHyphen">Insert non-breaking hyphen</v-btn>
       </v-col>
       <v-col cols="auto">
         <v-sheet class="day-container border-thick" max-width="180" min-width="180" min-height="498">
@@ -19,7 +21,7 @@
               <v-spacer></v-spacer>
               <v-col v-if="selectedPreset.schedule" cols="auto">
                 <v-row class="mr-2" align="center" no-gutters>
-                  <v-chip v-if="selectedPreset.variant" class="font-weight-bold" :color="selectedPreset.variant.includes('adj') ? 'warning' : 'special'" :input-value="true" outlined x-small>
+                  <v-chip v-if="selectedPreset.variant" class="font-weight-bold" :color="selectedPreset.variant.includes('adj') ? 'warning' : 'info'" :input-value="true" outlined x-small>
                     {{selectedPreset.variant}}
                   </v-chip>
                   <span class="display-1 ml-2 text--disabled font-weight-bold">{{selectedPreset.code}}</span>
@@ -58,20 +60,36 @@
           </v-layout>
         </v-sheet>
       </v-col>
-      <v-col cols="12" sm="8" md="3" lg="3" xl="2">
+      <v-col cols="12" sm="8" md="4" lg="3" xl="2">
+        <v-radio-group v-model="selectedPreset.code" :disabled="presets.length == 0" row>
+          <v-radio label="A" value="A"></v-radio>
+          <v-radio label="B" value="B"></v-radio>
+          <v-radio label="C" value="C"></v-radio>
+          <v-radio label="D" value="D"></v-radio>
+          <v-radio label="None" value=" "></v-radio>
+        </v-radio-group>
+        <v-select v-model="selectedPreset.variant" clearable dense :disabled="presets.length == 0" :items="['adjusted', 'special']" placeholder="Special/Adjusted" prepend-icon="flag"></v-select>
+        <v-divider></v-divider>
         <v-menu v-model="scheduleForm.menu" :close-on-content-click="false" offset-y min-width="290px">
           <template v-slot:activator="{on}">
-            <v-text-field v-model="scheduleForm.date" clearable dense label="Date of schedule" prepend-icon="event" readonly v-on="on"></v-text-field>
+            <v-text-field v-model="scheduleForm.date" clearable label="Date of schedule" prepend-icon="event" readonly v-on="on"></v-text-field>
           </template>
-          <v-date-picker v-model="scheduleForm.date" no-title @input="scheduleForm.menu = false"></v-date-picker>
+          <v-date-picker v-model="scheduleForm.date" :allowed-dates="allowedDate" no-title @input="scheduleForm.menu = false"></v-date-picker>
         </v-menu>
-        <v-btn tile color="primary" :disabled="!scheduleForm.date || scheduleForm.date.length == 0" :loading="scheduleForm.loading">Save as schedule</v-btn>
+        <v-btn tile color="primary" :disabled="!scheduleForm.date || scheduleForm.date.length == 0" :loading="scheduleForm.loading" @click="saveAsSchedule">Save as schedule</v-btn>
         <v-divider class="mt-4"></v-divider>
-        <v-text-field v-model="presetForm.name" clearable label="New preset name" prepend-icon="short_text"></v-text-field>
-        <v-btn tile color="primary" :disabled="!presetForm.name || presetForm.name.length == 0" :loading="presetForm.loading">Save as preset</v-btn>
-        <v-divider class="mt-4"></v-divider>
+        <v-text-field v-model="presetForm.name" clearable label="Preset name" prepend-icon="short_text"></v-text-field>
+        <v-btn tile color="primary" :disabled="!presetForm.name || presetForm.name.length == 0" :loading="presetForm.loading" @click="saveAsPreset">Save as preset</v-btn>
+        <v-divider class="my-4"></v-divider>
+        <div class="caption">
+          <p>Note: Don't include start or end times for collaboration periods.</p>
+          <p>Double check the editor for errors before saving.</p>
+        </div>
       </v-col>
     </v-row>
+    <v-snackbar v-model="snackbars.success1" color="success" bottom left :timeout="4000">Success.</v-snackbar>
+    <v-snackbar v-model="snackbars.success2" color="success" bottom left :timeout="5000">Successfully pushed update to {{onlineUsers}} online users.</v-snackbar>
+    <v-snackbar v-model="snackbars.error" color="error" bottom left :timeout="5000">An error occurred. Check your access token.</v-snackbar>
   </v-container>
 </template>
 
@@ -106,7 +124,6 @@ export default {
     return {
       presets: [],
       selectedPreset: {},
-      editedSchedule: "",
       options: {
         autoIndent: true,
         cursorSmoothCaretAnimation: true,
@@ -126,66 +143,96 @@ export default {
         menu: false,
         loading: false
       },
+      snackbars: {
+        error: false,
+        success1: false,
+        success2: false,
+      },
+      editor: null,
+      onlineUsers: 0,
     };
   },
   computed: {
     computedSchedule() {
       if (!this.selectedPreset.schedule) return [];
       let schedule = JSON.parse(JSON.stringify(this.selectedPreset.schedule)); // deep clone array
-      schedule[0].start = new Date("2020-01-01T"+schedule[0].start+"Z"); // just a random date
-      schedule[0].end = new Date("2020-01-01T"+schedule[0].end+"Z");
-      let result = [[[{ // create result array with first period (including its duration) as first element
-        ...schedule[0],
-        ...{duration: (schedule[0].end-schedule[0].start)/this.$MS_PER_MIN}}
-      ]]];
-      let latestEnd = schedule[0].end; // latest ending time in the current top-level period group (which can have multiple columns)
-      for (let i = schedule.length-1; i >= 0; i--) {
+      for (let i = 0; i < schedule.length; i++) {
         let period = schedule[i];
         if (period.name == "Collaboration") {
           period.start = "15:10:00.000";
           period.end = "15:30:00.000";
         }
+        period.start = new Date("2020-01-01T"+period.start+"Z"); // just a random date
+        period.end = new Date("2020-01-01T"+period.end+"Z");
+        period.duration = (period.end-period.start)/this.$MS_PER_MIN;
       }
+      let result = [[[{ // create result array with first period (including its duration) as first element
+        ...schedule[0],
+        ...{duration: (schedule[0].end-schedule[0].start)/this.$MS_PER_MIN}}
+      ]]];
+      let latestEnd = schedule[0].end; // latest ending time in the current top-level period group (which can have multiple columns)
       for (let i = 1; i < schedule.length; i++) {
         let lastGroup = result[result.length-1]; // last group of periods in the schedule array being built
         let period = schedule[i], prevPeriod = schedule[i-1];
-        period.start = new Date("2020-01-01T"+period.start+"Z");
-        period.end = new Date("2020-01-01T"+period.end+"Z");
-        period.duration = (period.end-period.start)/this.$MS_PER_MIN;
-        if (+period.start == +prevPeriod.start) // add column if two periods start at the same time (dates are coerced to numbers)
-          lastGroup.push([period]);
+        let needSplitCol = false; // need to add to previous group if there are periods that start before current one
+        for (let j = i+1; j < schedule.length; j++) {
+          if (schedule[j].start < period.start) {
+            needSplitCol = true;
+            break;
+          }
+        }
+        if (+period.start == +prevPeriod.start || +period.start == +lastGroup[0][0].start)
+          lastGroup.push([period]); // add column if two periods start at the same time (dates are coerced to numbers)
         else if (period.start < prevPeriod.end) // insert placeholder in new column if period starts before previous one ends
           lastGroup.push([
-            {duration: (period.start-prevPeriod.end)/this.$MS_PER_MIN}, // duration of placeholder period
+            {duration: (period.start-lastGroup[0][0].start)/this.$MS_PER_MIN}, // duration of placeholder period
             period
           ]);
-        else if (+period.start == +prevPeriod.end && period.start < latestEnd) // simply add to current column if periods are adjacent
-          lastGroup[lastGroup.length-1].push(period);
+        else if (+period.start == +prevPeriod.end && (period.start < latestEnd || needSplitCol))
+          lastGroup[lastGroup.length-1].push(period); // simply add to current column if periods are adjacent or a column split is needed
         else if (+period.start == +prevPeriod.end) // start a new period group if period starts after the previous group
           result.push([[period]]);
-        else if (period.start < latestEnd) // insert placeholder in current column if there's a gap between two periods
-          lastGroup[lastGroup.length-1].push({duration: (period.start-prevPeriod.end)/this.$MS_PER_MIN}, period); // I CHANGED THIS AFTER A BUG; IF I BROKE ANYTHING LATER IT'S PROBABLY FROM THIS!
+        else if (period.start < latestEnd || needSplitCol) // insert placeholder in current column if there's a gap between two periods or a column split is needed
+          lastGroup[lastGroup.length-1].push({duration: (period.start-prevPeriod.end)/this.$MS_PER_MIN}, period); // BUGFIXED HERE
         else // insert placeholder in a new period group otherwise
           result.push([[{duration: (period.start-latestEnd)/this.$MS_PER_MIN}]], [[period]]);
         latestEnd = Math.max(latestEnd, period.end);
       }
       return result;
     },
+    editedSchedule: {
+      get() {
+        if (this.selectedPreset.schedule) return JSON.stringify(this.selectedPreset.schedule, null, 2);
+        return "";
+      },
+      set(schedule) {
+        this.selectedPreset.schedule = JSON.parse(schedule);
+      }
+    },
   },
   watch: {
     accessToken() {
       this.fetchAllPresets();
     },
-    selectedPreset(preset) {
-      if (preset) this.editedSchedule = JSON.stringify(preset.schedule, null, 2);
-      else this.editedSchedule = "";
+    async "snackbars.success2"(open) {
+      if (open) {
+        const response = await fetch(this.baseUrl+"/api/clients", {
+          method: "GET",
+        });
+        this.onlineUsers = await response.text();
+      }
     },
   },
   created() {
     this.$MS_PER_MIN = 60*1000;
   },
   methods: {
+    allowedDate(dateString) {
+      let date = new Date(dateString);
+      return date.getUTCDay() > 0 && date.getUTCDay() < 6;
+    },
     editorDidMount(editor) {
+      this.editor = editor;
       editor.getModel().updateOptions({
         indentSize: 2,
         insertSpaces: true,
@@ -193,27 +240,71 @@ export default {
       });
     },
     async fetchAllPresets() {
+      if (!this.accessToken) return;
       const response = await fetch(this.baseUrl+"/admin/getAllPresets", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({access_token: this.accessToken}),
       });
-      if (!response.ok) return;
+      if (!response.ok) return this.snackbars.error = true;
       this.presets = await response.json();
+    },
+    insertNBHyphen() {
+      this.editor.executeEdits("", [{
+        range: this.editor.getSelection(),
+        forceMoveMarkers: true,
+        text: "‑",
+      }]);
+      this.editor.focus();
+    },
+    insertNBSpace() {
+      this.editor.executeEdits("", [{
+        range: this.editor.getSelection(),
+        forceMoveMarkers: true,
+        text: " ",
+      }]);
+      this.editor.focus();
     },
     async saveAsPreset() {
       this.presetForm.loading = true;
+      if (!this.selectedPreset.variant) delete this.selectedPreset.variant;
+      delete this.selectedPreset._id;
+      this.selectedPreset.preset = this.presetForm.name;
       const response = await fetch(this.baseUrl+"/admin/addPreset", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(),
+        body: JSON.stringify({
+          access_token: this.accessToken,
+          preset: this.selectedPreset,
+        }),
       });
-      if (!response.ok) return;
-      
+      if (response.ok) {
+        this.snackbars.success1 = true;
+        this.presetForm.name = "";
+        this.fetchAllPresets();
+      } else this.snackbars.error = true;
+      this.presetForm.loading = false;
     },
     async saveAsSchedule() {
       this.scheduleForm.loading = true;
-      //const response = await fetch(this.baseUrl+"/admin/")
+      if (!this.selectedPreset.variant) delete this.selectedPreset.variant;
+      delete this.selectedPreset._id;
+      const response = await fetch(this.baseUrl+"/admin/editSchedule", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          access_token: this.accessToken,
+          schedule: Object.assign({
+            date: this.scheduleForm.date+"T00:00:00.000Z"
+          }, this.selectedPreset),
+        }),
+      });
+      if (response.ok) {
+        this.snackbars.success2 = true;
+        this.scheduleForm.name = "";
+        this.fetchAllPresets();
+      } else this.snackbars.error = true;
+      this.scheduleForm.loading = false;
     },
   }
 };
