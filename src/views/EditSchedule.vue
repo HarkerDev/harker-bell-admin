@@ -78,7 +78,7 @@
         </v-menu>
         <v-btn tile color="primary" :disabled="!scheduleForm.date || scheduleForm.date.length == 0" :loading="scheduleForm.loading" @click="saveAsSchedule">Save as schedule</v-btn>
         <v-divider class="mt-4"></v-divider>
-        <v-text-field v-model="presetForm.name" clearable label="Preset name" prepend-icon="short_text"></v-text-field>
+        <v-text-field v-model="presetForm.name" clearable label="Name of preset" prepend-icon="short_text"></v-text-field>
         <v-btn tile color="primary" :disabled="!presetForm.name || presetForm.name.length == 0" :loading="presetForm.loading" @click="saveAsPreset">Save as preset</v-btn>
         <v-divider class="my-4"></v-divider>
         <div class="caption">
@@ -301,7 +301,7 @@ export default {
       });
       if (response.ok) {
         this.snackbars.success2 = true;
-        this.scheduleForm.name = "";
+        this.scheduleForm.date = "";
         this.fetchAllPresets();
       } else this.snackbars.error = true;
       this.scheduleForm.loading = false;
