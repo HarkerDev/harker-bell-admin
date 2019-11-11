@@ -76,10 +76,10 @@
           </template>
           <v-date-picker v-model="scheduleForm.date" :allowed-dates="allowedDate" no-title @input="scheduleForm.menu = false"></v-date-picker>
         </v-menu>
-        <v-btn tile color="primary" :disabled="!scheduleForm.date || scheduleForm.date.length == 0" :loading="scheduleForm.loading" @click="saveAsSchedule">Save as schedule</v-btn>
+        <v-btn color="primary" :disabled="!scheduleForm.date || scheduleForm.date.length == 0" :loading="scheduleForm.loading" tile @click="saveAsSchedule">Save as schedule</v-btn>
         <v-divider class="mt-4"></v-divider>
         <v-text-field v-model="presetForm.name" clearable label="Name of preset" prepend-icon="short_text"></v-text-field>
-        <v-btn tile color="primary" :disabled="!presetForm.name || presetForm.name.length == 0" :loading="presetForm.loading" @click="saveAsPreset">Save as preset</v-btn>
+        <v-btn color="primary" :disabled="!presetForm.name || presetForm.name.length == 0" :loading="presetForm.loading" tile @click="saveAsPreset">Save as preset</v-btn>
         <v-divider class="my-4"></v-divider>
         <div class="caption">
           <p>Note: Don't include start or end times for collaboration periods.</p>

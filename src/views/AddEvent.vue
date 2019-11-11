@@ -1,7 +1,21 @@
 <template>
   <v-container>
     <v-row>
-      <v-text-field v-model="event.name"></v-text-field>
+      <v-col>
+        <v-text-field v-model="event.name"></v-text-field>
+      </v-col>
+      <v-col>
+        <v-text-field v-model="event.category"></v-text-field>
+      </v-col>
+      <v-col>
+        <v-text-field v-model="event.start"></v-text-field>
+      </v-col>
+      <v-col>
+        <v-text-field v-model="event.end"></v-text-field>
+      </v-col>
+      <v-col>
+        <v-text-field v-model="event.date"></v-text-field>
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -13,8 +27,9 @@ export default {
       event: {
         name: "",
         category: "",
-        start: null,
-        end: null
+        date: "",
+        start: "",
+        end: "",
       }
     };
   },
