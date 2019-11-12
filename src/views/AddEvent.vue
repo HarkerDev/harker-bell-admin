@@ -141,12 +141,12 @@ export default {
 
 <style>
 .v-time-picker-title__time .v-picker__title__btn, .v-time-picker-title__time span {
-  font-size: 36px;
-  height: 32px;
+  font-size: 36px !important;
+  height: 32px !important;
 }
 .v-time-picker-title__ampm {
-  margin-top: 0;
-  margin-bottom: 0;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 .v-picker--time .v-picker__body {
   width: 240px !important;
