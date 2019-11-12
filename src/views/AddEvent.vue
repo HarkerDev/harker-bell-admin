@@ -114,7 +114,7 @@ export default {
     },
     async submit() {
       this.loading = true;
-      this.event.name.replace(/\\n/g, "\n"); // replace escaped newline characters with actual newline chars
+      this.event.name = this.event.name.replace(/\\n/g, "\n"); // replace escaped newline characters with actual newline chars
       const response = await fetch(this.baseUrl+"/admin/addEvents", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
