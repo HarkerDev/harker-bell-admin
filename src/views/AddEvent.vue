@@ -130,9 +130,10 @@ export default {
           }],
         }),
       });
-      if (response.ok) this.snackbars.success = true;
-      else this.snackbars.error = true;
-      this.clear();
+      if (response.ok) {
+        this.snackbars.success = true;
+        this.clear();
+      } else this.snackbars.error = true;
       this.loading = false;
     },
   },
