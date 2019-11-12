@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols="7" md="3" lg="4" xl="3">
-        <v-text-field v-model="event.name" label="Event Name"></v-text-field>
+        <v-text-field v-model="event.name" label="Event Name" hint="Newline characters are allowed." persistent-hint></v-text-field>
       </v-col>
       <v-col cols="5" md="3" lg="2">
         <v-select v-model="event.category" :items="categories" label="Event Category"></v-select>
