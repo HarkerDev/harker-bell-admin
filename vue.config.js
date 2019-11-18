@@ -6,7 +6,7 @@ module.exports = {
       languages: ["json"]
     })]
   },
-  productionSourceMap: false,
+  productionSourceMap: true,
   publicPath: "/admin/",
   transpileDependencies: ["vuetify"],
 }
