@@ -5,7 +5,7 @@
         <v-text-field v-model="message" dense hint="Make sure you don't self-XSS yourself." persistent-hint label="Message"></v-text-field>
       </v-col>
       <v-col cols="auto">
-        <v-btn color="primary" :disabled="message.length == 0" :loading="loading" tile @click="saveMessage">Save</v-btn>
+        <v-btn color="primary" :loading="loading" tile @click="saveMessage">Save</v-btn>
       </v-col>
     </v-row>
     <v-row>
