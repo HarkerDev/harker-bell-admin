@@ -68,7 +68,7 @@
           <v-radio label="D" value="D"></v-radio>
           <v-radio label="None" value=" "></v-radio>
         </v-radio-group>
-        <v-select v-model="selectedPreset.variant" clearable dense :disabled="presets.length == 0" :items="['', 'adjusted', 'special']" placeholder="Special/Adjusted" prepend-icon="flag"></v-select>
+        <v-select v-model="selectedPreset.variant" clearable dense :disabled="presets.length == 0" :items="['adjusted', 'special']" placeholder="Special/Adjusted" prepend-icon="flag"></v-select>
         <v-divider></v-divider>
         <v-menu v-model="scheduleForm.menu" :close-on-content-click="false" offset-y min-width="290px">
           <template v-slot:activator="{on}">
