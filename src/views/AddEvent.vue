@@ -32,6 +32,9 @@
           <v-time-picker v-model="event.end" ref="timepicker2" ampm-in-title></v-time-picker>
         </v-menu>
       </v-col>
+      <v-col cols="4" md="3" lg="2">
+        <v-checkbox v-model="event.clear_all" label="Clear all existing"></v-checkbox>
+      </v-col>
     </v-row>
     <v-row dense>
       <v-col cols="auto">
@@ -66,6 +69,7 @@ export default {
         date: this.$route.query.date || "",
         start: this.$route.query.start || "",
         end: this.$route.query.end || "",
+        clear_all: false,
       },
       categories: ["schoolwide", "academics", "important", "athspirit", "extra", "perfarts", "clubs", "special", "info", "other"],
       loading: false,
@@ -120,7 +124,7 @@ export default {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
           access_token: this.accessToken,
-          clear_all: false,
+          clear_all: this.event.clear_all,
           date: this.event.date+"T00:00:00.000Z",
           events: [{
             name: this.event.name,
