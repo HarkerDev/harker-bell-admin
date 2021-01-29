@@ -1,8 +1,8 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" sm="8" md="5" lg="6" xl="4">
-        <v-text-field v-model="message" dense hint="Make sure you don't self-XSS yourself." persistent-hint label="Message"></v-text-field>
+      <v-col cols="12" sm="8" md="7" lg="6" xl="4">
+        <v-text-field v-model="message" dense hint="Rendered as HTML!" persistent-hint label="Message"></v-text-field>
       </v-col>
       <v-col cols="auto">
         <v-btn color="primary" :loading="loading" tile @click="saveMessage">Save</v-btn>

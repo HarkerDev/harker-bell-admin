@@ -83,7 +83,7 @@
         <v-divider class="my-4"></v-divider>
         <div class="caption">
           <p>Note: Don't include start or end times for collaboration periods.</p>
-          <p>Double check the editor for errors before saving.</p>
+          <p>Double check the editor for errors before saving!</p>
         </div>
       </v-col>
     </v-row>
