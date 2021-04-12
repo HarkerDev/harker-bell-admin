@@ -43,6 +43,9 @@
       <v-col cols="auto">
         <v-btn color="primary" :disabled="allEmpty" text tile @click="clear">Clear</v-btn>
       </v-col>
+      <v-col cols="auto">
+        <v-btn color="error" :disabled="allEmpty" text tile @click="deleteAll">Delete all events on date</v-btn>
+      </v-col>
     </v-row>
     <v-snackbar v-model="snackbars.success" color="success" bottom left :timeout="5000">Successfully updated for {{onlineUsers}} online users.</v-snackbar>
     <v-snackbar v-model="snackbars.error" color="error" bottom left :timeout="5000">An error occurred. Check your access token.</v-snackbar>
@@ -88,7 +91,7 @@ export default {
   computed: {
     allEmpty() {
       for (const field of Object.keys(this.event))
-        if (this.event[field].length != 0) return false;
+        if (this.event[field].length != 0 && this.event[field] !== false) return false;
       return true;
     },
     hasEmpty() {
@@ -132,6 +135,24 @@ export default {
             start: this.event.date+"T"+this.event.start+":00.000Z",
             end: this.event.date+"T"+this.event.end+":00.000Z",
           }],
+        }),
+      });
+      if (response.ok) {
+        this.snackbars.success = true;
+        this.clear();
+      } else this.snackbars.error = true;
+      this.loading = false;
+    },
+    async deleteAll() {
+      this.loading = true;
+      const response = await fetch(this.baseUrl+"/admin/addEvents", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          access_token: this.accessToken,
+          clear_all: true,
+          date: this.event.date+"T00:00:00.000Z",
+          events: [],
         }),
       });
       if (response.ok) {
