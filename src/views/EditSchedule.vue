@@ -76,6 +76,8 @@
           </template>
           <v-date-picker v-model="scheduleForm.date" :allowed-dates="allowedDate" no-title @input="scheduleForm.menu = false"></v-date-picker>
         </v-menu>
+        <v-btn color="primary" :disabled="!scheduleForm.date || scheduleForm.date.length == 0" :loading="scheduleForm.loading" tile @click="getScheduleOnDate">Get schedule on date</v-btn><br>
+        <br>
         <v-btn color="primary" :disabled="!scheduleForm.date || scheduleForm.date.length == 0" :loading="scheduleForm.loading" tile @click="saveAsSchedule">Save as schedule</v-btn>
         <v-divider class="mt-4"></v-divider>
         <v-text-field v-model="presetForm.name" clearable label="Name of preset" prepend-icon="short_text"></v-text-field>
@@ -90,6 +92,7 @@
     <v-snackbar v-model="snackbars.success1" color="success" bottom left :timeout="4000">Success.</v-snackbar>
     <v-snackbar v-model="snackbars.success2" color="success" bottom left :timeout="5000">Successfully pushed update to {{onlineUsers}} online users.</v-snackbar>
     <v-snackbar v-model="snackbars.error" color="error" bottom left :timeout="5000">An error occurred. Check your access token.</v-snackbar>
+    <v-snackbar v-model="snackbars.errorSchedule" color="error" bottom left :timeout="5000">No schedule was found on that date.</v-snackbar>
   </v-container>
 </template>
 
@@ -145,6 +148,7 @@ export default {
       },
       snackbars: {
         error: false,
+        errorSchedule: false,
         success1: false,
         success2: false,
       },
@@ -306,6 +310,33 @@ export default {
       } else this.snackbars.error = true;
       this.scheduleForm.loading = false;
     },
+    convertSchedule(schedule) {
+      schedule.schedule = schedule.schedule.map((item) => {
+        let timezoneOffset = (new Date()).getTimezoneOffset() * 60 * 1000;
+        let startDate = new Date((new Date(item.start)).getTime() + timezoneOffset);
+        let endDate = new Date((new Date(item.end)).getTime() + timezoneOffset);
+        item.start = startDate.toTimeString().split(" ")[0] + "." + (startDate.getMilliseconds()/1000).toFixed(3).split(".")[1];
+        item.end = endDate.toTimeString().split(" ")[0] + "." + (endDate.getMilliseconds()/1000).toFixed(3).split(".")[1];
+        return item;
+      });
+      return schedule;
+    },
+    async getSchedule(month, day, year) {
+      this.scheduleForm.loading = true;
+      const response = await fetch(this.baseUrl+"/api/schedule?month=" + month + "&day=" + day + "&year=" + year, {
+        method: "GET",
+        headers: {"Content-Type": "application/json"},
+      });
+      if (response.ok) {
+        this.selectedPreset = this.convertSchedule(await response.json());
+        this.fetchAllPresets();
+      } else this.snackbars.errorSchedule = true;
+      this.scheduleForm.loading = false;
+    },
+    async getScheduleOnDate() {
+      let [year, month, day] = this.scheduleForm.date.split("-");
+      await this.getSchedule(month, day, year);
+    }
   }
 };
 </script>
