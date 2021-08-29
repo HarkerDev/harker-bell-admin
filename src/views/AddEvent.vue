@@ -96,7 +96,8 @@ export default {
     },
     hasEmpty() {
       for (const field of Object.keys(this.event))
-        if (this.event[field].length == 0) return true;
+        if (this.event[field].length === 0 &&
+            typeof this.event[field] !== "boolean") return true;
       return false;
     },
   },
