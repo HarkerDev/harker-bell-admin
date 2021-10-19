@@ -45,7 +45,7 @@ export default {
     },
   },
   created() {
-    this.$vuetify.theme.dark = localStorage.getItem("darkTheme") == "true";
+    this.$vuetify.theme.dark = localStorage.getItem("darkMode") == "true";
   },
   computed: {
     baseUrl() {
