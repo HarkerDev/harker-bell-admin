@@ -10,6 +10,12 @@
     </v-row>
     <v-row>
       <v-col class="body-2">
+        <div class="heading font-weight-bold">DO NOT put sensitive links on announcements as Harker Bell does not have authentication.</div>
+
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col class="body-2">
         <div class="overline font-weight-medium">Helpful Hints</div>
         <div>Use the <kbd>blink</kbd> class on a <kbd>span</kbd> tag to flash text.</div>
         <div>Use a <kbd>{color}--text</kbd> class to change the text color. For example, <kbd>blue2--text</kbd>.</div>
