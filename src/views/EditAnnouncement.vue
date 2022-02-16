@@ -3,6 +3,7 @@
     <v-row>
       <v-col cols="12" sm="8" md="7" lg="6" xl="4">
         <v-text-field v-model="message" dense hint="Rendered as HTML!" persistent-hint label="Announcement"></v-text-field>
+        <v-btn class="mt-1" color="primary" small text tile @click="insertLinkTemplate">Insert link template</v-btn>
       </v-col>
       <v-col cols="auto">
         <v-btn color="primary" :loading="loading" tile @click="saveAnnouncement">Save</v-btn>
@@ -93,6 +94,9 @@ export default {
       if (response.ok) this.snackbars.success = true;
       else this.snackbars.error = true;
       this.loading = false;
+    },
+    insertLinkTemplate(){
+      this.message+="<a target='_blank' href=''>Text</a>"
     },
   }
 };
