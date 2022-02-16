@@ -11,7 +11,7 @@
     </v-row>
     <v-row>
       <v-col class="body-2">
-        <div class="heading font-weight-bold">DO NOT put sensitive links on announcements as Harker Bell does not have authentication.</div>
+        <div class="heading font-weight-bold">Do NOT put sensitive links on announcements as Harker Bell does not have authentication. Instead, link to a related Schoology post for sensitive links when possible.</div>
 
       </v-col>
     </v-row>
