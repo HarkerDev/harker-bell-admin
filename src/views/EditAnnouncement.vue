@@ -96,7 +96,7 @@ export default {
       this.loading = false;
     },
     insertLinkTemplate(){
-      this.message+="<a target="_blank" href="Put the link here">Text</a>"
+      this.message+="<a target=\"_blank\" href=\"Put the link here\">Text</a>"
     },
   }
 };
