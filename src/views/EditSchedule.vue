@@ -45,7 +45,7 @@
                   <v-sheet v-else :key="pIndex" class="period border caption text-center d-flex" :height="period.duration+1" tile>
                     <v-layout :class="['content', {short: period.duration <= 50 || group.length > 1}]" column align-center justify-center>
                       <div ref="periodNames">
-                        {{period.name}}
+                        <span v-html="period.name"></span>
                         <span v-if="period.start && period.duration < 30 && column.length <= 1" class="text-no-wrap"> {{period.start|formatTime}}&ndash;{{period.end|formatTime}}</span>
                       </div>
                       <div v-if="period.start && period.duration >= 30" class="text-no-wrap">{{period.start|formatTime}}&ndash;{{period.end|formatTime}}</div>
