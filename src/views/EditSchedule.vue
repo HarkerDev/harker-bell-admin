@@ -37,7 +37,7 @@
                   <!-- LUNCH PERIOD -->
                   <v-sheet v-if="period.name && period.name.toLowerCase().indexOf('lunch') != -1" :key="pIndex" class="period border lunch caption text-center d-flex" :height="period.duration+1" tile>
                     <v-layout :class="{content: true, short: period.duration <= 50 || group.length > 1}" column align-center justify-center>
-                      <div>{{period.name}}</div>
+                      <div v-html="period.name"></div>
                       <div v-if="period.start && period.duration >= 30" class="text-no-wrap">{{period.start|formatTime}}&ndash;{{period.end|formatTime}}</div>
                     </v-layout>
                   </v-sheet>
