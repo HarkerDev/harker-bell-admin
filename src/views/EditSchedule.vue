@@ -21,7 +21,7 @@
               <v-spacer></v-spacer>
               <v-col v-if="selectedPreset.schedule" cols="auto">
                 <v-row class="mr-2" align="center" no-gutters>
-                  <v-chip v-if="selectedPreset.variant" class="font-weight-bold" :color="selectedPreset.variant.includes('adj') ? 'warning' : 'info'" :input-value="true" outlined x-small>
+                  <v-chip v-if="selectedPreset.variant" class="font-weight-bold" :color="selectedPreset.variant.includes('adj') ? 'warning' : (selectedPreset.variant.includes('special') ? 'info' : 'error')" :input-value="true" outlined x-small>
                     {{selectedPreset.variant}}
                   </v-chip>
                   <span class="display-1 ml-2 text--disabled font-weight-bold">{{selectedPreset.code}}</span>
