@@ -19,6 +19,9 @@
                 </v-layout>
               </v-col>
               <v-spacer></v-spacer>
+              <div v-if="selectedPreset.variant.includes('chicken') && selectedPreset.variant != 'chicken'" class="headline text--primary font-transition">🐔</div>
+              <div v-if="selectedPreset.variant == 'chicken'" class="headline text--primary font-transition">🐔🐔🐔</div>
+              <v-spacer v-if="selectedPreset.variant.includes('chicken')"></v-spacer>
               <v-col v-if="selectedPreset.schedule" cols="auto">
                 <v-row class="mr-2" align="center" no-gutters>
                   <v-chip v-if="selectedPreset.variant" class="font-weight-bold" :color="selectedPreset.variant.includes('adj') ? 'warning' : (selectedPreset.variant.includes('special') ? 'info' : 'error')" :input-value="true" outlined x-small>
