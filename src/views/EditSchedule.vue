@@ -19,13 +19,17 @@
                 </v-layout>
               </v-col>
               <v-spacer></v-spacer>
-              <div v-if="selectedPreset.schedule && selectedPreset.variant && selectedPreset.variant.includes('chicken') && selectedPreset.variant != 'chicken'" class="headline text--primary font-transition">🐔</div>
+              <div v-if="selectedPreset.schedule && selectedPreset.variant && selectedPreset.variant.endsWith('-chicken')" class="headline text--primary font-transition">🐔</div>
               <div v-if="selectedPreset.schedule && selectedPreset.variant && selectedPreset.variant == 'chicken'" class="headline text--primary font-transition">🐔🐔🐔</div>
-              <v-spacer v-if="selectedPreset.schedule && selectedPreset.variant && selectedPreset.variant.includes('chicken')"></v-spacer>
+              <div v-if="selectedPreset.schedule && selectedPreset.variant && selectedPreset.variant.endsWith('-laguna')" class="headline text--primary font-transition">🏖️</div>
+              <div v-if="selectedPreset.schedule && selectedPreset.variant && selectedPreset.variant == 'laguna'" class="headline text--primary font-transition">🏖️🏖️🏖️</div>
+              <div v-if="selectedPreset.schedule && selectedPreset.variant && selectedPreset.variant.endsWith('-grad')" class="headline text--primary font-transition">🎓</div>
+              <div v-if="selectedPreset.schedule && selectedPreset.variant && selectedPreset.variant == 'grad'" class="headline text--primary font-transition">🎓🎓🎓</div>
+              <v-spacer v-if="selectedPreset.schedule && selectedPreset.variant && ['chicken', 'laguna', 'grad'].includes(selectedPreset.variant.split('-')[selectedPreset.variant.split('-').length - 1])"></v-spacer>
               <v-col v-if="selectedPreset.schedule" cols="auto">
                 <v-row class="mr-2" align="center" no-gutters>
-                  <v-chip v-if="selectedPreset.variant && selectedPreset.variant != 'chicken'" class="font-weight-bold" :color="selectedPreset.variant.includes('adj') ? 'warning' : (selectedPreset.variant.includes('special') ? 'info' : 'error')" :input-value="true" outlined x-small>
-                    {{selectedPreset.variant.replace("-chicken", "")}}
+                  <v-chip v-if="selectedPreset.variant && !['chicken', 'laguna', 'grad'].includes(selectedPreset.variant)" class="font-weight-bold" :color="selectedPreset.variant.includes('adj') ? 'warning' : (selectedPreset.variant.includes('special') ? 'info' : 'error')" :input-value="true" outlined x-small>
+                    {{selectedPreset.variant.replace("-chicken", "").replace("-laguna", "").replace("-grad", "")}}
                   </v-chip>
                   <span class="display-1 ml-2 text--disabled font-weight-bold">{{selectedPreset.code}}</span>
                 </v-row>
@@ -71,7 +75,7 @@
           <v-radio label="D" value="D"></v-radio>
           <v-radio label="None" value=" "></v-radio>
         </v-radio-group>
-        <v-select v-model="selectedPreset.variant" clearable dense :disabled="presets.length == 0" :items="['adjusted', 'special', 'unofficial', 'unverified', 'chicken', 'adjusted-chicken', 'special-chicken', 'unofficial-chicken', 'unverified-chicken']" placeholder="Special/Adjusted/Other" prepend-icon="flag"></v-select>
+        <v-select v-model="selectedPreset.variant" clearable dense :disabled="presets.length == 0" :items="['adjusted', 'special', 'unofficial', 'unverified', 'chicken', 'adjusted-chicken', 'special-chicken', 'unofficial-chicken', 'unverified-chicken', 'laguna', 'adjusted-laguna', 'special-laguna', 'unofficial-laguna', 'unverified-laguna', 'grad', 'adjusted-grad', 'special-grad', 'unofficial-grad', 'unverified-grad']" placeholder="Special/Adjusted/Other" prepend-icon="flag"></v-select>
         <v-divider></v-divider>
         <v-menu v-model="scheduleForm.menu" :close-on-content-click="false" offset-y min-width="290px">
           <template v-slot:activator="{on}">
