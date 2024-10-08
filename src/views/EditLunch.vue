@@ -80,6 +80,16 @@ export default {
       onlineUsers: 0,
     };
   },
+  watch: {
+    async "snackbars.success2"(open) {
+      if (open) {
+        const response = await fetch(this.baseUrl+"/api/clients", {
+          method: "GET",
+        });
+        this.onlineUsers = await response.text();
+      }
+    },
+  },
   computed: {
     editedLunch: {
       get() {
@@ -108,16 +118,19 @@ export default {
       this.lunchForm.loading = true;
       if (!this.selectedPreset.variant) delete this.selectedPreset.variant;
       delete this.selectedPreset._id;
-      const response = await fetch(this.baseUrl+"/admin/editLunch", {
+    
+      const response = await fetch(this.baseUrl+"/admin/addLunch", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
           access_token: this.accessToken,
-          lunch: Object.assign({
-            date: this.lunchForm.date+"T00:00:00.000Z"
-          }, this.selectedPreset),
+          clear_all: true,
+          lunch: {
+            [this.lunchForm.date]: this.selectedPreset.lunch
+          }
         }),
       });
+      
       if (response.ok) {
         this.snackbars.success2 = true;
         this.lunchForm.date = "";
