@@ -320,8 +320,8 @@ export default {
     convertSchedule(schedule) {
       schedule.schedule = schedule.schedule.map((item) => {
         let timezoneOffset = (new Date()).getTimezoneOffset() * 60 * 1000;
-        let startDate = new Date((new Date(item.start)).getTime() + timezoneOffset);
-        let endDate = new Date((new Date(item.end)).getTime() + timezoneOffset);
+        let startDate = new Date((new Date(item.start)).getTime());
+        let endDate = new Date((new Date(item.end)).getTime());
         item.start = startDate.toTimeString().split(" ")[0] + "." + (startDate.getMilliseconds()/1000).toFixed(3).split(".")[1];
         item.end = endDate.toTimeString().split(" ")[0] + "." + (endDate.getMilliseconds()/1000).toFixed(3).split(".")[1];
         return item;
