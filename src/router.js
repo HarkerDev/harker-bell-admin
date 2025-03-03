@@ -30,6 +30,11 @@ const routes = [
     name: "edit",
     component: () => import(/* webpackChunkName: "editschedule" */ "./views/EditSchedule.vue")
   },
+  {
+    path: "/editLunch",
+    name: "editLunch",
+    component: () => import(/* webpackChunkName: "editschedule" */ "./views/EditLunch.vue")
+  },
 ];
 
 const router = new VueRouter({
