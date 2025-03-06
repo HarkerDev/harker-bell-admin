@@ -318,10 +318,16 @@ export default {
       this.scheduleForm.loading = false;
     },
     convertSchedule(schedule) {
+      function isInDST(date) {
+        // If the offsets are different, it means DST is in effect.
+        return date.getTimezoneOffset() < new Date(date.getFullYear(), 0, 1).getTimezoneOffset();
+      }
+
       schedule.schedule = schedule.schedule.map((item) => {
         let timezoneOffset = (new Date()).getTimezoneOffset() * 60 * 1000;
-        let startDate = new Date((new Date(item.start)).getTime() + timezoneOffset);
-        let endDate = new Date((new Date(item.end)).getTime() + timezoneOffset);
+        let dstOffset = isInDST(new Date(item.start)) * -1000 * 60 * 60;
+        let startDate = new Date((new Date(item.start)).getTime() + timezoneOffset + dstOffset);
+        let endDate = new Date((new Date(item.end)).getTime() + timezoneOffset + dstOffset);
         item.start = startDate.toTimeString().split(" ")[0] + "." + (startDate.getMilliseconds()/1000).toFixed(3).split(".")[1];
         item.end = endDate.toTimeString().split(" ")[0] + "." + (endDate.getMilliseconds()/1000).toFixed(3).split(".")[1];
         return item;
