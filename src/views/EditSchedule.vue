@@ -325,7 +325,7 @@ export default {
 
       schedule.schedule = schedule.schedule.map((item) => {
         let timezoneOffset = (new Date()).getTimezoneOffset() * 60 * 1000;
-        let dstOffset = isInDST(new Date(item.start)) * -1000 * 60 * 60;
+        let dstOffset = (isInDST(new Date(item.start)) != isInDST(new Date)) * this.$MS_PER_MIN * 60 * (isInDST(new Date) ? 1 : -1);
         let startDate = new Date((new Date(item.start)).getTime() + timezoneOffset + dstOffset);
         let endDate = new Date((new Date(item.end)).getTime() + timezoneOffset + dstOffset);
         item.start = startDate.toTimeString().split(" ")[0] + "." + (startDate.getMilliseconds()/1000).toFixed(3).split(".")[1];
