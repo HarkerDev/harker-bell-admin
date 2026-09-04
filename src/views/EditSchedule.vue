@@ -305,9 +305,11 @@ export default {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
           access_token: this.accessToken,
-          schedule: Object.assign({
-            date: this.scheduleForm.date+"T00:00:00.000Z"
-          }, this.selectedPreset),
+          schedule: Object.assign(
+            {},
+            this.selectedPreset,
+            {date: this.scheduleForm.date+"T00:00:00.000Z"}
+          ),
         }),
       });
       if (response.ok) {
